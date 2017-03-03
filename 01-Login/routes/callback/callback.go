@@ -3,11 +3,13 @@ package callback
 import (
 	_ "crypto/sha512"
 	"encoding/json"
-	"github.com/auth0-samples/auth0-golang-web-app/01-Login/app"
-	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/app"
+	"golang.org/x/oauth2"
+	"google.golang.org/appengine"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,14 +29,14 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	code := r.URL.Query().Get("code")
 
-	token, err := conf.Exchange(oauth2.NoContext, code)
+	token, err := conf.Exchange(appengine.NewContext(r), code)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Getting now the userInfo
-	client := conf.Client(oauth2.NoContext, token)
+	client := conf.Client(appengine.NewContext(r), token)
 	resp, err := client.Get("https://" + domain + "/userinfo")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

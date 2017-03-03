@@ -1,16 +1,19 @@
-package main
+package server
 
 import (
-        "github.com/auth0-samples/auth0-golang-web-app/01-Login/routes/callback"
-        "github.com/auth0-samples/auth0-golang-web-app/01-Login/routes/home"
-        "github.com/auth0-samples/auth0-golang-web-app/01-Login/routes/middlewares"
-        "github.com/auth0-samples/auth0-golang-web-app/01-Login/routes/user"
+	"net/http"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
-	"net/http"
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/app"
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/routes/callback"
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/routes/home"
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/routes/middlewares"
+	"github.com/tuxlife/auth0-golang-web-app/01-Login/routes/user"
 )
 
-func StartServer() {
+func init() {
+	app.Init()
 	r := mux.NewRouter()
 
 	r.HandleFunc("/", home.HomeHandler)
@@ -21,5 +24,4 @@ func StartServer() {
 	))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 	http.Handle("/", r)
-	http.ListenAndServe(":3000", nil)
 }
